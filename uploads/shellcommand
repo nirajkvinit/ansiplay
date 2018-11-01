@@ -1,0 +1,1 @@
+ansible-playbook -i SERVER_DETAILS /home/aditya/rohit/APACHE_CONFIGURATION.yml
