@@ -1,0 +1,92 @@
+{
+	"info": {
+		"_postman_id": "13513c1e-8ce7-4c92-b3c6-96d6c27375a8",
+		"name": "msritansible",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8080/api/ansible",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "name",
+							"value": "rohit",
+							"type": "text"
+						},
+						{
+							"key": "serverip",
+							"value": "192.168.1.1",
+							"type": "text"
+						},
+						{
+							"key": "packagename",
+							"value": "apache",
+							"type": "text"
+						},
+						{
+							"key": "privatekeypath",
+							"value": "/home/aditya/.ssh/rohit",
+							"type": "text"
+						},
+						{
+							"key": "playbookfile",
+							"type": "file",
+							"src": ""
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/ansible",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"ansible"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8080/api/ansible/run",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/ansible/run",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"ansible",
+						"run"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
