@@ -1,1 +1,1 @@
-ansible-playbook -i SERVER_DETAILS /home/aditya/rohit/APACHE_CONFIGURATION.yml
+ansible-playbook -i /home/aditya/niraj/SERVER_DETAILS /home/aditya/niraj/PING.yml

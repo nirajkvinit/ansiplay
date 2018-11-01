@@ -35,11 +35,14 @@ router.post("/", upload.single("playbookfile"), (req, res) => {
 
   const uploadedFile = req.file;
 
+  let serverDetailsFilePath = null;
+  let playbookFilename = null;
+
   createCustomerDirectory(customerDir)
     .then(req => {
       // Create SERVER DETAILS FILE and add ip address
-      const serverFilePath = path.join(homedir, name, "SERVER_DETAILS");
-      fs.writeFile(serverFilePath, serverip, function(err) {
+      serverDetailsFilePath = path.join(homedir, name, "SERVER_DETAILS");
+      fs.writeFile(serverDetailsFilePath, serverip, function(err) {
         if (err) throw err;
       });
     })
@@ -47,8 +50,8 @@ router.post("/", upload.single("playbookfile"), (req, res) => {
       // Create vars.yml file
       const varsYamlFilePath = path.join(homedir, name, "vars.yml");
       const varsData = {
-        package: packagename,
-        private: privatekeypath
+        PACKAGE_NAME: packagename,
+        PRIVATE_KEY_PATH: privatekeypath
       };
 
       yaml(varsYamlFilePath, varsData, function(err) {
@@ -57,7 +60,7 @@ router.post("/", upload.single("playbookfile"), (req, res) => {
     })
     .then(() => {
       // get the uploaded file and store in the directory
-      let playbookFilename = null;
+
       if (uploadedFile) {
         let { originalname, filename } = uploadedFile;
         playbookFilename = path.join(homedir, name, originalname);
@@ -75,7 +78,7 @@ router.post("/", upload.single("playbookfile"), (req, res) => {
     })
     .then(playbookFilename => {
       // create shell script command
-      let shellCommand = `ansible-playbook -i SERVER_DETAILS ${playbookFilename}`;
+      let shellCommand = `ansible-playbook -i ${serverDetailsFilePath} ${playbookFilename}`;
       const serverFilePath = path.join("uploads", "shellcommand");
       fs.writeFile(serverFilePath, shellCommand, function(err) {
         if (err) throw err;
@@ -119,12 +122,20 @@ router.post("/run", (req, res) => {
       console.log(commandString);
       shell.exec(commandString, { silent: true }, function(code, out, err) {
         if (code === 0) {
-          return res.json({ code, out, err });
+          return res.json({
+            output: serializeError(out)
+              .toString()
+              .replace(/(\r\n\t|\n|\r\t)/gm, "")
+          });
         } else {
-          let newerror = serializeError(err).toString();
-          console.log(newerror.toString());
-          newerror = newerror.replace(/(\r\n\t|\n|\r\t)/gm, "");
-          return res.json({ code, out, newerror });
+          // let newerror = serializeError(err).toString();
+          // console.log(newerror.toString());
+          // newerror = newerror.replace(/(\r\n\t|\n|\r\t)/gm, "");
+          return res.json({
+            error: serializeError(err)
+              .toString()
+              .replace(/(\r\n\t|\n|\r\t)/gm, "")
+          });
         }
       });
     })
