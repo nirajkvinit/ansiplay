@@ -7,6 +7,7 @@ const path = require("path");
 const serializeError = require("serialize-error");
 
 const shell = require("shelljs");
+const safeJsonStringify = require("safe-json-stringify");
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
@@ -20,10 +21,11 @@ const validateAnsibleInput = require("../../validation/ansible");
 router.post("/", upload.single("playbookfile"), (req, res) => {
   const { errors, isValid } = validateAnsibleInput(req.body);
   const homedir = os.homedir();
-
+  console.log("hitting api");
+  console.log(res.body);
   // check validation
   if (!isValid) {
-    return res.status(400).json(errors);
+    return res.status(400).json({ error: errors });
   }
 
   const name = req.body.name;
@@ -123,14 +125,9 @@ router.post("/run", (req, res) => {
       shell.exec(commandString, { silent: true }, function(code, out, err) {
         if (code === 0) {
           return res.json({
-            output: serializeError(out)
-              .toString()
-              .replace(/(\r\n\t|\n|\r\t)/gm, "")
+            output: out
           });
         } else {
-          // let newerror = serializeError(err).toString();
-          // console.log(newerror.toString());
-          // newerror = newerror.replace(/(\r\n\t|\n|\r\t)/gm, "");
           return res.json({
             error: serializeError(err)
               .toString()
